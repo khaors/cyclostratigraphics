@@ -87,8 +87,11 @@ shinyUI(pageWithSidebar(
       #########################################################################
       tabPanel("Spectral Analysis",
                icon = icon("clock-o"),
-               h3("Third step: Identify significant frequencies"),
+               h3("Third step: Identify significant frequencies/cycles"),
                br(),
+               br(),
+               p(HTML("In this step all the significant frequencies/cycles present in the
+                       stratigraphic signal are identified using spectral analysis.")),
                br(),
                uiOutput("SPEC.selectvar"),
                uiOutput("SPEC.ar"),
