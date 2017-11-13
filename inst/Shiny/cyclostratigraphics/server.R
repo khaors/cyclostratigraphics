@@ -185,11 +185,11 @@ shinyServer(function(input, output, session) {
       return(NULL)
     if(is.null(input$EDAplottypes1) || input$EDAplottypes1 == "None")
       return(NULL)
-    if(input$EDAplottypes1 == "Well Logs"){
-      bot <- max(current.table$DEPTH)
-      tmp <- textInput(inputId = "EDAtop", label = "Depth Bottom(ft)",
-                       value = as.character(bot))
-    }
+#    if(input$EDAplottypes1 == "Well Logs"){
+#      bot <- max(current.table$DEPTH)
+#      tmp <- textInput(inputId = "EDAtop", label = "Depth Bottom(ft)",
+#                       value = as.character(bot))
+#    }
     if(input$EDAplottypes1 == "Histogram"){
       tmp <- textInput(inputId = "EDAnbins", label = "Number Bins", value = "30")
     }
@@ -219,11 +219,11 @@ shinyServer(function(input, output, session) {
       return(NULL)
     if(is.null(input$EDAplottypes1) || input$EDAplottypes1 == "None")
       return(NULL)
-    if(input$EDAplottypes1 == "Well Logs"){
-        top <- min(current.table$DEPTH)
-        tmp <- textInput(inputId = "EDAbottom", label = "Depth Top(ft)",
-                         value = as.character(top))
-    }
+#    if(input$EDAplottypes1 == "Well Logs"){
+#        top <- min(current.table$DEPTH)
+#        tmp <- textInput(inputId = "EDAbottom", label = "Depth Top(ft)",
+#                         value = as.character(top))
+#    }
     if(input$EDAplottypes1 == "Histogram"){
       tmp <- selectInput(inputId = "histovar", label = "Variable",
                          choices = c("None", names(current.table)), selected = "None")
@@ -584,6 +584,8 @@ shinyServer(function(input, output, session) {
     if(is.null(input$WAVE.selectvar1) ||  input$WAVE.selectvar1 == "None")
       return(NULL)
     current.var <- input$WAVE.selectvar1
+    if(input$WAVE.sigtest1 == "None")
+      return(NULL)
     #print(current.var)
     mother <- input$WAVE.type1
     par <- as.numeric(input$WAVE.par1)
