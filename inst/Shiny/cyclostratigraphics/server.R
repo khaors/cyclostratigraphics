@@ -104,7 +104,7 @@ shinyServer(function(input, output, session) {
     }
     if(input$EDA.filter1a == "Geological Unit"){
       fms <- as.character(unique(current.table$Unit))
-      print(c("None", fms))
+      #print(c("None", fms))
       tmp <- selectInput(inputId = "EDA.filter.fm", label = "Geological Unit= ",
                          choices = c("None", fms), selected = "None", multiple = TRUE)
     }
@@ -154,7 +154,7 @@ shinyServer(function(input, output, session) {
     }
     if(input$EDA.filter1a == "Geological Unit"){
       chosen.fms <- input$EDA.filter.fm
-      print(chosen.fms)
+      #print(chosen.fms)
       server.env$current.table.original <- current.table
       current.table <- current.table %>% filter(Unit %in% chosen.fms)
       server.env$current.table <- current.table
@@ -562,7 +562,7 @@ shinyServer(function(input, output, session) {
     if(is.null(current.table))
       return(NULL)
     selectInput(inputId = "WAVE.sigtest1", label = "Significance Test Type: ",
-                choices = c("None", "0", "1", "2"), selected = "None")
+                choices = c("None", "0", "1"), selected = "None")
   })
   #
   output$WAVE.run <- renderUI({
