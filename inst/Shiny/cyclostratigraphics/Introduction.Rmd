@@ -1,0 +1,24 @@
+---
+title: "CycloStratiGraphyics: A Shiny interface to Cyclostratigraphy"
+output: 
+  html_document:
+    mathjax: "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+---
+# __CycloStratiGraphics__: A Shiny interface to Cyclostratigraphy
+
+
+
+Here is an equation:
+
+$$Q = a(h − c)^b$$  
+
+
+The main sections of this interface are:
+
+- Import data
+- Exploratory Data Analysis
+- Filtering
+- Tuning
+- Spectral Analysis (MTM, Lomb-Scargle, SSA, ANN)
+- Multiresolution Analysis (wavelet)
+- Segmentation

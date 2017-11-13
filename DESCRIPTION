@@ -1,0 +1,14 @@
+Package: cyclostratigraphics
+Type: Package
+Title:  R Package for the analysis and evaluation of stratigraphic time series
+Version: 0.1.0
+Author: Oscar Garcia-Cabrejo
+Maintainer: Oscar Garcia-Cabrejo <khaors@gmail.com>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL
+Depends:
+    R(>= 3.0.0)
+Imports: ggplot2 astrochron dplyr gridExtra biwavelet    
+Encoding: UTF-8
+LazyData: true
