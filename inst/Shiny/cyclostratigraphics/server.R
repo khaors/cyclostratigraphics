@@ -470,16 +470,23 @@ shinyServer(function(input, output, session) {
     if(is.null(input$SPEC.selectvar1) ||  input$SPEC.selectvar1 == "None")
       return(NULL)
     current.var <- input$SPEC.selectvar1
+    current.var1 <- NULL
+    if(current.var == "RPS2"){
+      current.var1 <- log10(current.table[current.var])
+    }
+    else{
+      current.var1 <- current.table[current.var]
+    }
     #print(current.var)
     ar <- input$SPEC.ar1
     demean <- input$SPEC.demean1
     detrend <- input$SPEC.detrend1
     #
-    res.mtm <- mtm(cbind(current.table$DEPTH,current.table[current.var]),
+    res.mtm <- mtm(cbind(current.table$DEPTH, current.var1),
                    tbw = 2, ar = ar, pl= 2, demean = demean, detrend = detrend,
                    output = 1, genplot = F)
     #
-    res.mtm3 <- mtm(cbind(current.table$DEPTH,current.table[current.var]),
+    res.mtm3 <- mtm(cbind(current.table$DEPTH, current.var1),
                     tbw = 2, ar = ar, pl= 2, demean = demean, detrend = detrend,
                     output = 3, genplot = F)
     #
