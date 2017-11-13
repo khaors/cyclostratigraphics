@@ -22,11 +22,12 @@ shinyUI(pageWithSidebar(
     ),
     #
     imageOutput("uptc.logo", inline=TRUE),
-    p(HTML("<h5>Welcome to CycloStratiGRAPHICS, the open-source on-line interface for
+    p(HTML("<h5>Welcome to CycloStratiGRAPHICS, the open-source on-line GUI for
       cyclostratigraphy.</h5> This interface helps in the identification of the cycles
       present in a stratigraphic signal (grain size, well log, abundance data, etc)
       using the <strong>R</strong> language. Identify the periodic components of your
-      stratigraphic data and visualize the results using the panels on the right."))
+      stratigraphic data and visualize the results using the panels on the right
+      using spectral and wavelet analysis."))
   ),
   mainPanel(
     tabsetPanel(
@@ -85,6 +86,7 @@ shinyUI(pageWithSidebar(
       ####                    Panel 'Spectral Analysis'
       #########################################################################
       tabPanel("Spectral Analysis",
+               icon = icon("clock-o"),
                h3("Third step: Identify significant frequencies"),
                br(),
                br(),
@@ -105,6 +107,7 @@ shinyUI(pageWithSidebar(
       ####                    Panel 'Wavelet Data'
       #########################################################################
       tabPanel("Wavelet Analysis",
+               icon = icon("location-arrow"),
                h3("Fourth step: Localize significant cycles in space"),
                br(),
                uiOutput("WAVE.selectvar"),
