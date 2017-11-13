@@ -11,7 +11,7 @@ library(shiny)
 #
 shinyUI(pageWithSidebar(
   # Application title
-  headerPanel("CycloStratiGRAPHICS: Shiny User Interface (v0.1)"),
+  headerPanel(HTML("<h2>CycloStratiGRAPHICS: Shiny User Interface (v0.1)</h2>")),
   ########################################################################################
   #### Panel 'About' (right hand side)
   ########################################################################################
