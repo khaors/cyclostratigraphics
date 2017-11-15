@@ -424,69 +424,71 @@ shinyServer(function(input, output, session) {
       return(NULL)
     if(is.null(input$SPEC.selectvar1) ||  input$SPEC.selectvar1 == "None")
       return(NULL)
-    tmp <- actionButton(inputId = "SPEC.run1", label = "Run Spectral Analysis", icon = icon("play"))
+    tmp <- actionButton(inputId = "SPEC.run1", label = "Run,Plot Spectral Analysis", icon = icon("play"))
   })
   #
   observeEvent(input$SPEC.run1, {
-    run_spectral_analysis()
-  })
-  #
-  output$SPEC.plot <- renderPlot({
-    input$SPEC.run1
-    current.table <- server.env$current.table
-    res.mtm <- server.env$res.mtm
-    res.mtm3 <- server.env$res.mtm3
-    if(is.null(current.table))
-      return(NULL)
-    if(is.null(input$SPEC.selectvar1) ||  input$SPEC.selectvar1 == "None")
-      return(NULL)
-    if(is.null(res.mtm))
-      return(NULL)
-    if(is.null(res.mtm3))
-      return(NULL)
-    #
-    #print(names(res.mtm))
-    xrng <- as.numeric(unlist(strsplit(input$SPEC.xlim1, ",")))
-    yrng <- as.numeric(unlist(strsplit(input$SPEC.ylim1, ",")))
-    current.title <- NULL
-    if(input$SPEC.selectvar1 == "GR"){
-      current.title <- "Gamma Ray: MTM"
-    }
-    else if(input$SPEC.selectvar1 == "NPHI"){
-      current.title <- "Neutron Porosity: MTM"
-    }
-    else if(input$SPEC.selectvar1 == "RPS2"){
-      current.title <- "Resistivity: MTM"
-    }
-    p1 <- ggplot() + geom_line(aes(x = Frequency, y = Power), data= res.mtm) +
-      geom_line(aes(x = Frequency, y = AR1_99_power), data = res.mtm, col = "red") +
-      xlim(xrng) +
-      scale_y_log10(limits = yrng) +
-      xlab("Frequency (cycles/ft)") +
-      ggtitle(current.title) +
-      theme_bw()
-    return(p1)
+    output$SPEC.plot <- renderPlot({
+      current.table <- server.env$current.table
+      print('INSIDE')
+      if(is.null(current.table))
+        return(NULL)
+      selectvar1 <- isolate(input$SPEC.selectvar1)
+      print(selectvar1)
+      if(is.null(selectvar1) ||  selectvar1 == "None")
+        return(NULL)
+#      if(is.null(res.mtm))
+#        return(NULL)
+#      if(is.null(res.mtm3))
+#        return(NULL)
+      #
+      run_spectral_analysis()
+      res.mtm <- server.env$res.mtm
+      res.mtm3 <- server.env$res.mtm3
+      #print(names(res.mtm))
+      xrng <- isolate(as.numeric(unlist(strsplit(input$SPEC.xlim1, ","))))
+      yrng <- isolate(as.numeric(unlist(strsplit(input$SPEC.ylim1, ","))))
+      current.title <- NULL
+      if(selectvar1 == "GR"){
+        current.title <- "Gamma Ray: MTM"
+      }
+      else if(selectvar1 == "NPHI"){
+        current.title <- "Neutron Porosity: MTM"
+      }
+      else if(selectvar1 == "RPS2"){
+        current.title <- "Resistivity: MTM"
+      }
+      p1 <- ggplot() + geom_line(aes(x = Frequency, y = Power), data= res.mtm) +
+        geom_line(aes(x = Frequency, y = AR1_99_power), data = res.mtm, col = "red") +
+        xlim(xrng) +
+        scale_y_log10(limits = yrng) +
+        xlab("Frequency (cycles/ft)") +
+        ggtitle(current.title) +
+        theme_bw()
+      return(p1)
+    })
+
+
   })
   #
   run_spectral_analysis <- function(){
     current.table <- server.env$current.table
-    input$SPEC.run1
     if(is.null(current.table))
       return(NULL)
-    if(is.null(input$SPEC.selectvar1) ||  input$SPEC.selectvar1 == "None")
+    selectvar1 <- isolate(input$SPEC.selectvar1)
+    if(is.null(selectvar1) || selectvar1 == "None")
       return(NULL)
-    current.var <- input$SPEC.selectvar1
     current.var1 <- NULL
-    if(current.var == "RPS2"){
-      current.var1 <- log10(current.table[current.var])
+    if(selectvar1 == "RPS2"){
+      current.var1 <- log10(current.table[selectvar1])
     }
     else{
-      current.var1 <- current.table[current.var]
+      current.var1 <- current.table[selectvar1]
     }
-    #print(current.var)
-    ar <- input$SPEC.ar1
-    demean <- input$SPEC.demean1
-    detrend <- input$SPEC.detrend1
+    print(current.var1)
+    ar <- isolate(input$SPEC.ar1)
+    demean <- isolate(input$SPEC.demean1)
+    detrend <- isolate(input$SPEC.detrend1)
     #
     res.mtm <- mtm(cbind(current.table$DEPTH, current.var1),
                    tbw = 2, ar = ar, pl= 2, demean = demean, detrend = detrend,
@@ -502,6 +504,8 @@ shinyServer(function(input, output, session) {
     #
     server.env$res.mtm <- res.mtm
     server.env$res.mtm3 <- res.mtm3
+    print(res.mtm)
+    return(NULL)
   }
   #
   output$SPEC.view <- renderTable({

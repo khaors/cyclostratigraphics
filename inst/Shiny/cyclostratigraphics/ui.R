@@ -104,6 +104,7 @@ shinyUI(pageWithSidebar(
                uiOutput("SPEC.ylim"),
                uiOutput("SPEC.run"),
                br(),
+               br(),
                plotOutput("SPEC.plot"),
                br(),
                h4('Significant Frequencies/Cycles'),
