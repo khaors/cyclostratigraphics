@@ -583,26 +583,40 @@ shinyServer(function(input, output, session) {
   })
   #
   observeEvent(input$WAVE.run1, {
-    run_wavelet_analysis()
+    output$WAVE.plot <- renderPlot({
+      current.table <- server.env$current.table
+      if(is.null(current.table))
+        return(NULL)
+      run_wavelet_analysis()
+      wt.res <- server.env$wt.res
+      if(is.null(wt.res))
+        return(NULL)
+      selectvar1 <- isolate(input$WAVE.selectvar1)
+      type1 <- isolate(input$WAVE.type1)
+      current.title <- paste0(selectvar1,': ', type1, ' Wavelet')
+      plot(wt.res, main = current.title, plot.cb = F, plot.phase = F,
+           type = "power.corr.norm", lwd.sig = 2, xlab = "Depth(ft)",
+           ylab = "Cycle(ft)")
+    })
   })
   #
   run_wavelet_analysis <- function(){
     current.table <- server.env$current.table
-    input$WAVE.run1
     if(is.null(current.table))
       return(NULL)
-    if(is.null(input$WAVE.selectvar1) ||  input$WAVE.selectvar1 == "None")
+    selectvar1 <- isolate(input$WAVE.selectvar1)
+    if(is.null(selectvar1) ||  selectvar1 == "None")
       return(NULL)
-    current.var <- input$WAVE.selectvar1
-    if(input$WAVE.sigtest1 == "None")
+    sigtest1 <- isolate(input$WAVE.sigtest1)
+    if(sigtest1 == "None")
       return(NULL)
     #print(current.var)
-    mother <- input$WAVE.type1
-    par <- as.numeric(input$WAVE.par1)
-    lag <- as.numeric(input$WAVE.lag1)
-    dosig <- input$WAVE.dosig1
-    sig.level <- as.numeric(input$WAVE.siglvl1)
-    sig.test <- as.integer(input$WAVE.sigtest1)
+    mother <- isolate(input$WAVE.type1)
+    par <- isolate(as.numeric(input$WAVE.par1))
+    lag <- isolate(as.numeric(input$WAVE.lag1))
+    dosig <- isolate(input$WAVE.dosig1)
+    sig.level <- isolate(as.numeric(input$WAVE.siglvl1))
+    sig.test <- isolate(as.integer(input$WAVE.sigtest1))
     #print(c(mother, par, lag, dosig, sig.level, sig.test))
     #print(mother)
     #if(mother == 2)
@@ -610,31 +624,20 @@ shinyServer(function(input, output, session) {
     #if(mother == 3)
     #  mother <- "morlet"
     current.depth <- current.table$DEPTH
-    current.value <-  log10(current.table[current.var])
+    current.value <-  log10(current.table[selectvar1])
     current.value1 <- loess.smooth(current.depth, current.value, span = .025, degree = 2,
                                    evaluation = length(current.depth))
     #print(cbind(current.depth, current.value))
     #print(cbind(current.value1$x, current.value1$y))
     #
+    dt <- current.value1$x[2]-current.value1$x[1]
     wt.res <- wt(cbind(current.value1$x, current.value1$y),
+                 dt = dt, dj = 1/12,
                  mother = mother, param = par, lag1 = lag,
                  sig.level = sig.level, sig.test = sig.test, do.sig = dosig)
     #
     server.env$wt.res <- wt.res
   }
   #
-  output$WAVE.plot <- renderPlot({
-    input$WAVE.run1
-    current.table <- server.env$current.table
-    wt.res <- server.env$wt.res
-    if(is.null(current.table))
-      return(NULL)
-    if(is.null(wt.res))
-      return(NULL)
-    current.title <- paste0(input$WAVE.selectvar1,': ', input$WAVE.type1, ' Wavelet')
-    plot(wt.res, main = current.title, plot.cb = F, plot.phase = F,
-         type = "power.corr.norm", lwd.sig = 2, xlab = "Depth(ft)",
-         ylab = "Cycle(ft)")
-  })
 })
 
