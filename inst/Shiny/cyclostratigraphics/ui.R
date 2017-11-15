@@ -81,6 +81,9 @@ shinyUI(pageWithSidebar(
                uiOutput("EDAoption2"),
                uiOutput("EDAoption3"),
                br(),
+               actionButton(inputId = "EDA.plot.results", label = "Plot Results"),
+               br(),
+               br(),
                plotOutput("EDA.plot")),
       #########################################################################
       ####                    Panel 'Spectral Analysis'

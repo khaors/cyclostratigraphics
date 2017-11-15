@@ -6,7 +6,6 @@
 #
 #    http://shiny.rstudio.com/
 #
-
 library(shiny)
 library(dplyr)
 library(ggplot2)
@@ -245,124 +244,131 @@ shinyServer(function(input, output, session) {
     return(tmp)
   })
   #
-  output$EDA.plot <- renderPlot({
-    res <- NULL
-    current.table <- server.env$current.table
-    if(is.null(current.table))
-      return(NULL)
-    #
-    if(is.null(input$EDAplottypes1) || input$EDAplottypes1 == "None")
-      return(NULL)
-    #
-    #if(is.null(input$histovar))
-    #  return(NULL)
-    if(input$EDAplottypes1 == "Well Logs"){
-      # Resistivity plot
-      p1 <- ggplot() + geom_line(aes(x = DEPTH, y = RPS2), data = current.table,
-                                 color = "black") +
-        scale_y_log10() +
-        scale_x_reverse() +
-        coord_flip() +
-        xlab('Depth(ft)') +
-        ggtitle('Resistivity') +
-        theme_bw(base_size = 16) +
-        theme(aspect.ratio = 3,
-              plot.margin = unit(rep(.01,4),"cm"))
-      # Gamma Ray
-      p2 <- ggplot() + geom_line(aes(x= DEPTH, y = GR), data = current.table,
-                                 color = "black") +
-        scale_x_reverse() +
-        coord_flip() +
-        xlab('Depth(ft)') +
-        ggtitle('Gamma Ray') + theme_bw(base_size = 16) +
-        theme(aspect.ratio = 3,
-              plot.margin = unit(rep(.01,4),"cm"))
-      # Neutron Porosity
-      p3 <- ggplot() + geom_line(aes(x = DEPTH, y = NPHI), data = current.table, col = "black") +
-        scale_x_reverse() +
-        scale_y_reverse() +
-        coord_flip() + xlab('Depth(ft)') +
-        ggtitle("Neutron Porosity") +
-        theme_bw(base_size = 16) +
-        theme(aspect.ratio = 3,
-              plot.margin = unit(rep(.01,4),"cm"))
+  #
+  observeEvent(input$EDA.plot.results,{
+    output$EDA.plot <- renderPlot({
+      res <- NULL
+      current.table <- server.env$current.table
+      if(is.null(current.table))
+        return(NULL)
       #
-      res <- grid.arrange(p2, p1, p3, ncol = 3)
-    }
-    if(input$EDAplottypes1 == "Histogram"){
-      if(is.null(input$EDAnbins)){
-        nbins <- 30
-      }
-      else{
-        nbins <- as.numeric(input$EDAnbins)
-      }
-      #print(nbins)
-      h1 <- ggplot(aes(x = GR), data = current.table) + geom_histogram(bins = nbins,
-                                                                       fill="green") +
-        theme_bw() +
-        ggtitle('Gamma Ray')
-      #print(h1)
-      h2 <- ggplot(aes(x = RPS2), data = current.table) + geom_histogram(bins = nbins,
-                                                                         fill="red") +
-        scale_x_log10() +
-        theme_bw() +
-        ggtitle('Resistivity')
-      #print(h2)
-      h3 <- ggplot(aes(x = NPHI), data = current.table) + geom_histogram(bins = nbins,
-                                                                         fill = "blue") +
-        theme_bw() +
-        ggtitle('Neutron Porosity')
-      #print(h3)
+      plot.type <- isolate(input$EDAplottypes1)
+      if(is.null(plot.type) || plot.type == "None")
+        return(NULL)
       #
-      if(is.null(input$histovar) || input$histovar == "None"){
-        res <- grid.arrange(h1, h2, h3, ncol = 2)
+      if(plot.type == "Well Logs"){
+        # Resistivity plot
+        p1 <- ggplot() + geom_line(aes(x = DEPTH, y = RPS2), data = current.table,
+                                   color = "black") +
+          scale_y_log10() +
+          scale_x_reverse() +
+          coord_flip() +
+          xlab('Depth(ft)') +
+          ggtitle('Resistivity') +
+          theme_bw(base_size = 16) +
+          theme(aspect.ratio = 3,
+                plot.margin = unit(rep(.01,4),"cm"))
+        # Gamma Ray
+        p2 <- ggplot() + geom_line(aes(x= DEPTH, y = GR), data = current.table,
+                                   color = "black") +
+          scale_x_reverse() +
+          coord_flip() +
+          xlab('Depth(ft)') +
+          ggtitle('Gamma Ray') + theme_bw(base_size = 16) +
+          theme(aspect.ratio = 3,
+                plot.margin = unit(rep(.01,4),"cm"))
+        # Neutron Porosity
+        p3 <- ggplot() + geom_line(aes(x = DEPTH, y = NPHI), data = current.table, col = "black") +
+          scale_x_reverse() +
+          scale_y_reverse() +
+          coord_flip() + xlab('Depth(ft)') +
+          ggtitle("Neutron Porosity") +
+          theme_bw(base_size = 16) +
+          theme(aspect.ratio = 3,
+                plot.margin = unit(rep(.01,4),"cm"))
+        #
+        res <- grid.arrange(p2, p1, p3, ncol = 3)
       }
-      else {
-        if(input$histovar == "GR")
-          res <- h1
-        if(input$histovar == "NPHI")
-          res <- h3
-        if(input$histovar == "RPS2")
-          res <- h2
-      }
-      #
-      if(is.null(input$groupvar)){
-        res <- grid.arrange(h1, h2, h3, ncol = 2)
-      }
-      else if(input$groupvar){
-        current.table$Unit <- factor(current.table$Unit,  levels=unique(current.table$Unit))
-        nbins <- as.numeric(input$EDAnbins)
-        if(input$histovar == "None"){
-          res <- grid.arrange(h1, h2, h3, ncol = 2)
+      if(plot.type == "Histogram"){
+        EDA.nbins <- isolate(input$EDAnbins)
+        if(is.null(EDA.nbins)){
+          nbins <- 30
         }
         else{
-          if(input$histovar == "GR"){
-            res <- ggplot(aes(x = GR), data = current.table) +
-              geom_histogram(bins=nbins, fill="green") +
-              facet_wrap(~Unit) +
-              theme_bw() +
-              ggtitle('Gamma Ray')
+          nbins <- as.numeric(EDA.nbins)
+        }
+        #print(nbins)
+        h1 <- ggplot(aes(x = GR), data = current.table) + geom_histogram(bins = nbins,
+                                                                         fill="green") +
+          theme_bw() +
+          ggtitle('Gamma Ray')
+        #print(h1)
+        h2 <- ggplot(aes(x = RPS2), data = current.table) + geom_histogram(bins = nbins,
+                                                                           fill="red") +
+          scale_x_log10() +
+          theme_bw() +
+          ggtitle('Resistivity')
+        #print(h2)
+        h3 <- ggplot(aes(x = NPHI), data = current.table) + geom_histogram(bins = nbins,
+                                                                           fill = "blue") +
+          theme_bw() +
+          ggtitle('Neutron Porosity')
+        #print(h3)
+        #
+        histovar <- isolate(input$histovar)
+        if(is.null(histovar) || histovar == "None"){
+          res <- grid.arrange(h1, h2, h3, ncol = 2)
+        }
+        else {
+          if(histovar == "GR")
+            res <- h1
+          if(histovar == "NPHI")
+            res <- h3
+          if(histovar == "RPS2")
+            res <- h2
+        }
+        #
+        groupvar <- isolate(input$groupvar)
+        if(is.null(groupvar)){
+          res <- grid.arrange(h1, h2, h3, ncol = 2)
+        }
+        else if(groupvar){
+          current.table$Unit <- factor(current.table$Unit,  levels=unique(current.table$Unit))
+          nbins <- as.numeric(EDA.nbins)
+          if(histovar == "None"){
+            res <- grid.arrange(h1, h2, h3, ncol = 2)
           }
-          if(input$histovar == "RPS2"){
-            res <- ggplot(aes(x = RPS2), data = current.table) +
-              geom_histogram(bins=nbins, fill = "red") +
-              facet_wrap(~Unit) +
-              scale_x_log10() +
-              theme_bw() +
-              ggtitle('Resistivity')
-          }
-          if(input$histovar == "NPHI"){
-            res <- ggplot(aes(x = NPHI), data = current.table) +
-              geom_histogram(bins=nbins, fill="blue") +
-              facet_wrap(~Unit) +
-              theme_bw() +
-              ggtitle('Neutron Porosity')
+          else{
+            if(histovar == "GR"){
+              res <- ggplot(aes(x = GR), data = current.table) +
+                geom_histogram(bins=nbins, fill="green") +
+                facet_wrap(~Unit) +
+                theme_bw() +
+                ggtitle('Gamma Ray')
+            }
+            if(histovar == "RPS2"){
+              res <- ggplot(aes(x = RPS2), data = current.table) +
+                geom_histogram(bins=nbins, fill = "red") +
+                facet_wrap(~Unit) +
+                scale_x_log10() +
+                theme_bw() +
+                ggtitle('Resistivity')
+            }
+            if(histovar == "NPHI"){
+              res <- ggplot(aes(x = NPHI), data = current.table) +
+                geom_histogram(bins=nbins, fill="blue") +
+                facet_wrap(~Unit) +
+                theme_bw() +
+                ggtitle('Neutron Porosity')
+            }
           }
         }
       }
-    }
-    return(res)
+      return(res)
+    })
+    #
   })
+
   ########################################################################################
   ####                    Panel 'Spectral Analysis'
   ########################################################################################
