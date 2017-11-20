@@ -17,9 +17,9 @@ shinyUI(pageWithSidebar(
   ########################################################################################
   sidebarPanel(
     #
-    tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.min.css")
-    ),
+    #tags$head(
+    #  tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.min.css")
+    #),
     #
     imageOutput("uptc.logo", inline=TRUE),
     p(HTML("<h5>Welcome to CycloStratiGRAPHICS, the open-source on-line GUI for
